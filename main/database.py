@@ -2,6 +2,10 @@
 import sqlite3 # module to inport to work with local databases
 
 
+def round_custom(n):
+    return int(n + 0.5)
+
+
 def create_database(fun):
     '''Decorator to create the database if it doesn't exists'''
     def wrapper(*args, **kwargs):
@@ -138,8 +142,8 @@ def return_grade_proportions() -> dict:
 
 
 @create_database
-def return_average_by_date() -> list:
-    '''funcion that returns averages by date'''
+def return_average_by_date():
+    '''Function that returns averages by date, including rounded subject averages and their combined average.'''
     command = """
     WITH cumulative_grades AS (
         SELECT date, grade, weight, subject_name
@@ -178,42 +182,44 @@ def return_average_by_date() -> list:
         data.sort(key=lambda x: x[1])
 
         subject_averages = {}
-        general_averages = []
-        dates = set()
-
         final_result = []
+        rounded_general_averages = []
 
         for record in data:
             record_type, date, subject_name, average = record
-            dates.add(date)
-            
+
             if record_type == 'Subject Average':
                 subject_averages[subject_name] = average
+                final_result.append(('Subject Average', date, subject_name, average))
             elif record_type == 'General Average':
-                valid_subject_averages = [avg for sub, avg in subject_averages.items()]
-                if valid_subject_averages:
-                    general_avg = sum(valid_subject_averages) / len(valid_subject_averages)
+
+                rounded_subject_averages = {sub: round_custom(avg) for sub, avg in subject_averages.items()}
+
+                non_rounded_general_avg = sum(subject_averages.values()) / len(subject_averages) if subject_averages else 0.0
+
+                if rounded_subject_averages:
+                    rounded_general_avg = sum(rounded_subject_averages.values()) / len(rounded_subject_averages)
                 else:
-                    general_avg = 0.0
-                general_averages.append((date, general_avg))
+                    rounded_general_avg = 0.0
 
-            if subject_name:
-                final_result.append(('Subject Average', date, subject_name, subject_averages.get(subject_name, average)))
-            else:
+                rounded_general_averages.append((date, rounded_general_avg))
 
-                final_result.append(('General Average', date, None, general_averages[-1][1]))
+                final_result.append(('General Average', date, None, non_rounded_general_avg))
+                final_result.append(('Rounded General Average', date, None, rounded_general_avg))
 
         final_result.sort(key=lambda x: (x[1], x[0]))
 
-        last_result = [{'date': row[1], 'average_grade': row[3]} for row in final_result if row[0] == "General Average"]
+        original_averages = [{'date': row[1], 'average_grade': row[3]} for row in final_result if row[0] == "General Average"]
+        rounded_averages = [{'date': row[1], 'average_grade': row[3]} for row in final_result if row[0] == "Rounded General Average"]
 
-        return last_result
-    
+        return original_averages, rounded_averages
+
     except Exception as e:
         print(e)
-        return []
+        return [], []
     finally:
         connection.close()
+
 
 
 @create_database
@@ -269,7 +275,7 @@ def return_averages() -> list:
 
 
 @create_database
-def return_general_average() -> str:
+def return_general_average():
     '''function to return the general average'''
     command = """
     SELECT SUM(average_grade) / COUNT(subject_name) AS overall_average

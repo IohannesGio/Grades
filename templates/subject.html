@@ -13,8 +13,9 @@
         arrow_back
     </span>
 
-    <h1>SUBJECT: {{subject}}</h1>
-    <button id="add-grade-button" type="button">Add grade</button>
+    <h1>{{subject}}</h1>
+
+    <h3>Average: {{average}}</h3>
 
     <form id="add-grade-section" style="display: none;">
         <input type="number" id="grade" name="grade" placeholder="grade" step="0.01">
@@ -47,7 +48,9 @@
             </tr>
         {% endfor %}
     </table>
-    <h3>Average: {{average}}</h3>
+    <br>
+
+    <button id="add-grade-button" type="button">Add grade</button>
 
 </body>
 <script src="{{ url_for('static', filename='/subject/subject.js') }}"></script>
