@@ -1,4 +1,7 @@
 document.addEventListener("DOMContentLoaded", function () {
+
+    getRequest();
+
     var button = document.getElementById("add-grade-button");
     button.addEventListener("click", function () {
         showSection(button);
@@ -54,6 +57,11 @@ function showSection(button) {
     button.style.display = 'none';
 };
 
+function cancelAddGrade() {
+    document.getElementById("add-grade-section").style.display = 'none';
+    document.getElementById("add-grade-button").style.display = 'flex';
+}
+
 function deleteGrade(id) {
     var data = {
         id: id
@@ -80,7 +88,7 @@ function deleteGrade(id) {
 }
 
 function goBack() {
-    window.history.back();
+    window.location.href = "/";
 }
 
 function editGrade(id_, grade_, date_, weight_, type_) {
@@ -138,4 +146,29 @@ function sendEditGrade() {
             window.alert(data.message);
         }
     })
+}
+
+function getRequest() {
+    fetch("/changePeriod?subject=" + document.title + "&period=" + document.getElementById("period-choice").value)
+    .then(res => res.text())
+    .then(data => {
+        document.getElementById("grade-content").innerHTML = data;
+    })
+}
+
+function changePeriod(period) {
+    var data = {
+        period: period,
+        subject: document.title
+    };
+
+    fetch("/changePeriod", {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(data)
+    })
+    .then(res => res.text(), getRequest())
+    .catch(err => console.error('error: ', err));
 }

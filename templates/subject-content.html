@@ -1,0 +1,22 @@
+<table>
+    <thead>
+        <tr>
+            <th>Grade</th>
+            <th>Date</th>
+            <th>Weight</th>
+            <th>Type</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for id, grade,date,weight,type in grades %}
+        <tr>
+            <td>{{grade}}</td>
+            <td>{{date}}</td>
+            <td>{{weight}}</td>
+            <td>{{type}}</td>
+            <td><button type="button" id="delete-grade-{{id}}" onclick="deleteGrade(event.target.id)">Delete</button></td>
+            <td><button type="button" onclick="editGrade('{{id}}', '{{grade}}','{{date}}','{{weight}}','{{type}}')">Edit</button></td>
+        </tr>
+    {% endfor %}
+    </tbody>
+</table>

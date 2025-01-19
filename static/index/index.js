@@ -1,4 +1,5 @@
 document.addEventListener("DOMContentLoaded", function () {
+
     fetch('/index-content')
     .then(response => response.text())
     .then(data => {
@@ -8,8 +9,8 @@ document.addEventListener("DOMContentLoaded", function () {
         formSubject.addEventListener('submit', function (event) {
             event.preventDefault();
 
-            var subject = document.getElementById("subject").value;
-            var regex = /^[a-zA-z]+$/;
+            var subject = document.getElementById("subject").value.replace(/\s+/g, '_');
+            var regex = /^[a-zA-Z_]+$/;
             if (!regex.test(subject)) {
                 window.alert("special characters or numbers in subject name");
                 return false;
@@ -38,10 +39,6 @@ document.addEventListener("DOMContentLoaded", function () {
             .catch(err => console.error('error: ', err));
         });
 
-        var button = document.getElementById("add-subject-button");
-        button.addEventListener("click", function () {
-            showSection(button);
-        });
         })
     .catch(error => console.error('Errore nel caricamento:', error));
 
@@ -56,7 +53,12 @@ document.addEventListener("DOMContentLoaded", function () {
 
 function showSection(button) {
     document.getElementById("add-subject-section").style.display = 'flex';
-    button.style.display = 'none';
+    document.getElementById(button).style.display = 'none';
+};
+
+function cancelAddSubject() {
+    document.getElementById("add-subject-section").style.display = 'none';
+    document.getElementById("add-subject-button").style.display = 'flex';
 };
 
 function loadContent(id) {
@@ -216,6 +218,136 @@ function redirect(subject) {
     }
     else {
         window.alert("error while going to subject: " + subject);
+    }
+    })
+    .catch(err => console.error('error: ', err));
+}
+
+function deleteSubject(subject) {
+
+    var data = {
+        subject_to_delete: subject
+    };
+
+    fetch("/deleteSubject", {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(data)
+    })
+    .then(res => res.json())
+    .then(data => {
+    if (data.ok) {
+        window.alert(data.message);
+        loadContent('settings');
+    }
+    else {
+        window.alert(data.message);
+    }
+    })
+    .catch(err => console.error('error: ', err));
+}
+
+function renameSubject(subject) {
+
+    var new_name = prompt("Insert new name for subject: " + subject).toUpperCase();
+
+    if (new_name == null) {
+        return false;
+    }
+
+    var data = {
+        subject_to_rename: subject,
+        new_name: new_name
+    };
+
+    fetch("/renameSubject", {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(data)
+    })
+    .then(res => res.json())
+    .then(data => {
+    if (data.ok) {
+        window.alert(data.message);
+        loadContent('settings');
+    }
+    else {
+        window.alert(data.message);
+    }
+    })
+    .catch(err => console.error('error: ', err));
+}
+
+function setObjective(subject) {
+    
+    var new_objective = prompt("Insert new objective for " + subject);
+
+    if (new_objective != null) {
+        var data = {
+            subject: subject,
+            objective: new_objective
+        };
+
+        fetch("/setObjective", {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(data)
+        })
+        .then(res => res.json())
+        .then(data => {
+        if (data.ok) {
+            window.alert(data.message);
+            loadContent('settings');
+        }
+        else {
+            window.alert(data.message);
+        }
+        })
+        .catch(err => console.error('error: ', err));
+    }
+}
+
+function showPeriodSection(period, button) {
+    document.getElementById(period).style.display = 'flex';
+    document.getElementById(button).style.display = 'none';
+}
+
+function cancelPeriod(period, button) {
+    document.getElementById(period).style.display = 'none';
+    document.getElementById(button).style.display = 'flex';
+}
+
+function setPeriod(period) {
+    var start = document.getElementById("start-date-" + period).value;
+    var end = document.getElementById("end-date-" + period).value;
+
+    var data = {
+        period: (period === "first-period") ? "first_period" : "second_period",
+        start: start,
+        end: end
+    };
+
+    fetch("/setPeriod", {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(data)
+    })
+    .then(res => res.json())
+    .then(data => {
+    if (data.ok) {
+        window.alert(data.message);
+        loadContent('settings');
+    }
+    else {
+        window.alert(data.message);
     }
     })
     .catch(err => console.error('error: ', err));

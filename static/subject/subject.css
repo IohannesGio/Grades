@@ -14,3 +14,20 @@ button {
     padding-left: 10px;
     padding-right: 10px;
 }
+
+form {
+    flex-direction: column;
+    max-width: min-content;
+}
+
+form > * {
+    margin-bottom: 10px;
+}
+
+.button-section {
+    display: flex;
+}
+
+.button-section > button {
+    width: 50%;
+}

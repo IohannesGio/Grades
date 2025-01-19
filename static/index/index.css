@@ -62,24 +62,41 @@ button {
     padding: 5px 10px;
 }
 
-.averages {
+form {
+    flex-direction: column;
+    max-width: min-content;
+}
+
+form > * {
+    margin-bottom: 10px;
+}
+
+.button-section {
+    display: flex;
+}
+
+.button-section > button {
+    width: 50%;
+}
+
+.averages, .objectives-section {
     display: flex;
     flex-direction: column;
     background-color: var(--primary-color);
     border-radius: 20px;
 }
 
-.general, .rounded, .predicted {
+.general, .rounded, .predicted, .objective {
     display: flex;
     justify-content: space-between;
     align-items: center;
 }
 
-.general > *, .rounded > *, .predicted > * {
+.general > *, .rounded > *, .predicted > *, .objective > *, .objectives-section > * {
     padding: 10px;
 }
 
-.general > p, .rounded > p, .predicted > p {
+.general > p, .rounded > p, .predicted > p, .objective > p, .objectives-section > * {
     margin: 0;
 }
 
@@ -117,4 +134,13 @@ button {
 #average-label {
     font-weight: bold;
     font-size: large;
+}
+
+.periods {
+    display: flex;
+    flex-direction: row;
+}
+
+.periods > * {
+    padding: 10px;
 }

@@ -8,11 +8,15 @@
         </div>
         <div class="rounded">
             <label for="">General average rounded</label>
-            <p>{{general_average_rounded[1][-1]['average_grade'] | round(2)}}</p>
+            <p>{{safe_value | default('N/A')}}</p>
         </div>
         <div class="predicted">
             <label for="">General average predicted</label>
             <p>{{general_average_predicted}}</p>
+        </div>
+        <div class="objective">
+            <label for="">Objective</label>
+            <p>{{average_objective}}</p>
         </div>
     </div>
 </div>
@@ -28,17 +32,20 @@
 
     {% endfor %}
 </div>
+
+<!-- # TODO -->
 <div class="last-grade"></div>
 
 <h3>Add a subject</h3>
 
-<button id="add-subject-button" type="button">Add a subject</button>
+<button id="add-subject-button" type="button" onclick="showSection(event.target.id)">Add a subject</button>
 
 <div id="add-subject-section" class="add-subject-section" style="display: none;">
     <form action="/addSubject" method="post" >
-        <label for="">Subject name</label>
-        <input type="text" id="subject" name="subject">
-        <br>
-        <button type="submit">Add subject</button>
+        <input type="text" id="subject" name="subject" placeholder="Subject name">
+        <div class="button-section">
+            <button type="submit">Add subject</button>
+            <button type="button" onclick="cancelAddSubject()">Cancel</button>
+        </div>
     </form>
 </div>
