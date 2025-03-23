@@ -148,15 +148,12 @@ function loadContent(id) {
                 const dataMainSp = data.data_sp;
                 const roundedDataSp = data.data_rounded_sp;
 
-                // Estrarre e ordinare le date separatamente per FP e SP
                 const uniqueDatesFp = [...new Set(dataMainFp.map(item => item.date))].sort();
                 const uniqueDatesSp = [...new Set(dataMainSp.map(item => item.date))].sort();
 
-                // Creare etichette ordinali per FP e SP separatamente
                 const labelsFp = uniqueDatesFp.map((_, index) => `${index + 1}°`);
                 const labelsSp = uniqueDatesSp.map((_, index) => `${index + 1}°`);
 
-                // Creare mappe per ottenere i valori basati sulle date
                 const getDataMap = (dataList) => {
                     const map = {};
                     dataList.forEach(item => { map[item.date] = item.average_grade; });

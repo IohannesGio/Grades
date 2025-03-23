@@ -1,4 +1,4 @@
-'''Server in python using flask'''
+"""Server in python using flask"""
 import json
 from flask import Flask, render_template, request, jsonify, url_for, abort # module for the server
 import database
@@ -9,13 +9,13 @@ app = Flask(__name__,template_folder="../templates", static_folder="../static") 
 
 @app.errorhandler(404)
 def return_404(error) -> tuple[str, int]:
-    '''generic return 404 error'''
+    """generic return 404 error"""
     return render_template("404.html"), 404
 
 
 @app.route("/editGrade", methods=['POST'])
 def edit_grade():
-    '''post method to edit a grade'''
+    """post method to edit a grade"""
     grade_data = request.get_json()
     edit_status = database.edit_grade(grade_data)
     if edit_status:
@@ -24,7 +24,7 @@ def edit_grade():
 
 @app.route("/subject/<subject>", methods=['GET'])
 def return_subject_page(subject):
-    '''return subject page'''
+    """return subject page"""
     if subject in [x[0] for x in database.list_subjects()]:
         periods = database.get_periods()
         average = database.return_average_by_period_bis(subject)
@@ -36,7 +36,7 @@ def return_subject_page(subject):
 
 @app.route("/addGrade", methods=['POST'])
 def add_grade():
-    '''adds a grade received from the web page'''
+    """adds a grade received from the web page"""
     grade_data = request.get_json()
     response = database.add_grade(grade=grade_data['grade'], subject_name=grade_data['subject'], date=grade_data['date'],weight=grade_data['grade_weight'], type_=grade_data['type'])
     if response:
@@ -46,7 +46,7 @@ def add_grade():
 
 @app.route("/deleteGrade", methods=['POST'])
 def delete_grade():
-    '''deletes a grade given an input from the web page'''
+    """deletes a grade given an input from the web page"""
     grade_data = request.get_json()
     response = database.delete_grade(id_=grade_data['id'])
     if response: 
@@ -56,20 +56,20 @@ def delete_grade():
 
 @app.route("/", methods=["GET"])
 def return_index():
-    '''return home page'''    
+    """return home page"""    
     return render_template("index.html"), 200
 
 
 @app.route("/index-content", methods=['GET'])
 def return_content():
-    '''return home page content'''
+    """return home page content"""
     general_average_rounded=database.return_average_by_date_period()
     safe_value = round(general_average_rounded[1][-1]['average_grade'], 2) if general_average_rounded[1] and len(general_average_rounded[1]) > 0 else 'N/A'
     return render_template("index-content.html", averages_list=database.return_averages_by_period(), subjects_list = database.list_subjects(), general_average=database.return_general_average_by_period(), safe_value=safe_value, average_objective = database.return_average_objective()), 200
 
 @app.route("/addSubject", methods=['POST'])
 def add_subject():
-    '''adds a subject given by the web page'''
+    """adds a subject given by the web page"""
     subject: json = request.get_json()
     response = database.add_subject(subject['subject'])
     if response is True:
@@ -81,7 +81,7 @@ def add_subject():
 
 @app.route("/redirect", methods=['POST'])
 def redirect():
-    '''redirects to the subject page'''
+    """redirects to the subject page"""
     subject: json = request.get_json()
     subject_redirect = subject['subject_redirect']
     return jsonify({'redirect': url_for('return_subject_page', subject=subject_redirect)}), 200
@@ -89,7 +89,7 @@ def redirect():
 
 @app.route("/getAverageByDate", methods=['GET'])
 def get_average_by_date():
-    '''get request to return the average by date'''
+    """get request to return the average by date"""
     data_fp, data_rounded_fp = database.return_average_by_date("first")
     data_sp, data_rounded_sp = database.return_average_by_date("second")
     return jsonify({'data_fp': data_fp, 'data_rounded_fp': data_rounded_fp, 'data_sp': data_sp, 'data_rounded_sp': data_rounded_sp}), 200
@@ -97,20 +97,20 @@ def get_average_by_date():
 
 @app.route("/stats", methods=['GET'])
 def render_charts():
-    '''redirects to stats page'''
+    """redirects to stats page"""
     _, number, subject_number = database.objective_achievement_by_period()
     return render_template("stats.html", grade_bar_fp=json.dumps(database.return_grade_proportions_by_period("first")), grade_bar_sp=json.dumps(database.return_grade_proportions_by_period("second")), subject_number = subject_number, number = number), 200
 
 
 @app.route("/settings", methods=['GET'])
 def redirect_settings():
-    '''redirects to settings page'''
+    """redirects to settings page"""
     return render_template("settings.html", subjects = database.list_subjects(), periods = database.get_periods()), 200
 
 
 @app.route("/deleteSubject", methods=['POST'])
 def delete_subject():
-    '''deletes a subject given by the web page'''
+    """deletes a subject given by the web page"""
     subject: json = request.get_json()
     response = database.delete_subject(subject['subject_to_delete'])
     if response:
@@ -120,7 +120,7 @@ def delete_subject():
 
 @app.route("/renameSubject", methods=['POST'])
 def rename_subject():
-    '''renames a subject given by the web page'''
+    """renames a subject given by the web page"""
     subject: json = request.get_json()
     response = database.rename_subject(subject['subject_to_rename'], subject['new_name'])
     if response is True:
@@ -132,7 +132,7 @@ def rename_subject():
 
 @app.route("/setObjective", methods=['POST'])
 def set_objective():
-    '''sets an objective given by the web page'''
+    """sets an objective given by the web page"""
     objective: json = request.get_json()
     response = database.set_objective(objective['subject'], objective['objective'])
     if response:
@@ -142,7 +142,7 @@ def set_objective():
 
 @app.route("/setPeriod", methods=['POST'])
 def set_period():
-    '''sets a period given by the web page'''
+    """sets a period given by the web page"""
     period: json = request.get_json()
     response = database.set_period(period['period'], period['start'], period['end'])
     if response is True:
@@ -154,7 +154,7 @@ def set_period():
 
 @app.route("/changePeriod", methods=['GET', 'POST'])
 def change_period():
-    '''changes the period given by the web page'''
+    """changes the period given by the web page"""
     if request.method == 'POST':
         period: json = request.get_json()
         subject = period.get('subject')

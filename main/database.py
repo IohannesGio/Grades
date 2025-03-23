@@ -1,15 +1,15 @@
-'''Script that runs the operation on the database'''
+"""Script that runs the operation on the database"""
 from datetime import datetime
-import sqlite3 # module to inport to work with local databases
+import sqlite3 # module to import to work with local databases
 
 
 def round_custom(n):
-    '''round a number to the next integer if its decimal part is 0.5 or more'''
+    """round a number to the next integer if its decimal part is 0.5 or more"""
     return int(n + 0.5)
 
 
 def create_database(fun):
-    '''Decorator to create the database if it doesn't exists'''
+    """Decorator to create the database if it doesn't exist"""
     def wrapper(*args, **kwargs):
         connection = sqlite3.connect("grades.sqlite3")
         cursor = connection.cursor()
@@ -51,7 +51,7 @@ def create_database(fun):
 
 @create_database
 def add_subject(subject: str) -> bool | str:
-    '''function to add a subject in the subject_list'''
+    """function to add a subject in the subject_list"""
     command = f"INSERT INTO subject_list (subject) VALUES ('{subject.upper()}');"
     try:
         connection = sqlite3.connect("grades.sqlite3")
@@ -70,7 +70,7 @@ def add_subject(subject: str) -> bool | str:
 
 @create_database
 def list_subjects() -> list:
-    '''function to return all subjects added'''
+    """function to return all subjects added"""
     command = "SELECT * FROM subject_list"
     final_list = []
     try:
@@ -93,7 +93,7 @@ def list_subjects() -> list:
 
 @create_database
 def return_objective(subject: str) -> str:
-    '''function that returns the objective of a subject'''
+    """function that returns the objective of a subject"""
     command = f"SELECT objective FROM subject_list WHERE subject = '{subject}'"
     try:
         connection = sqlite3.connect("grades.sqlite3")
@@ -110,7 +110,7 @@ def return_objective(subject: str) -> str:
 
 @create_database
 def return_average_objective() -> str:
-    '''function that returns the average objective of all subjects'''
+    """function that returns the average objective of all subjects"""
     command = "SELECT AVG(objective) FROM subject_list"
     try:
         connection = sqlite3.connect("grades.sqlite3")
@@ -127,7 +127,7 @@ def return_average_objective() -> str:
 
 @create_database
 def add_grade(subject_name, grade, date, weight, type_) -> bool:
-    '''function that adds a grade'''
+    """function that adds a grade"""
     command = f"INSERT INTO grades (subject_name, grade, date, weight, type) VALUES ('{subject_name}', '{grade}', '{date}', '{weight}', '{type_}')"
     try:
         connection = sqlite3.connect("grades.sqlite3")
@@ -144,7 +144,7 @@ def add_grade(subject_name, grade, date, weight, type_) -> bool:
 
 @create_database
 def list_grades(subject: str) -> list:
-    '''function that returns a list of all the grades depending on the subject'''
+    """function that returns a list of all the grades depending on the subject"""
     command = f"SELECT * FROM grades WHERE subject_name = '{subject}'"
     grades_list = []
     try:
@@ -165,7 +165,7 @@ def list_grades(subject: str) -> list:
 
 @create_database
 def list_grades_by_period(subject: str, start_date=None, end_date=None) -> list:
-    '''function that returns a list of all the grades depending on the subject and optionally within a date range'''
+    """function that returns a list of all the grades depending on the subject and optionally within a date range"""
     if start_date and end_date:
         command = f"SELECT * FROM grades WHERE subject_name = '{subject}' AND date BETWEEN '{start_date}' AND '{end_date}'"
     else:
@@ -189,7 +189,7 @@ def list_grades_by_period(subject: str, start_date=None, end_date=None) -> list:
 
 @create_database
 def list_all_grades() -> list:
-    '''function that returns a list of all the grades'''
+    """function that returns a list of all the grades"""
     command = "SELECT grade FROM grades;"
     grades_dict = []
     try:
@@ -207,21 +207,8 @@ def list_all_grades() -> list:
 
 
 @create_database
-def return_grade_proportions() -> dict:
-    '''function that returns how many times a grade appears, considering only the first digit'''
-    base_list = list_all_grades()
-    grade_proportions_dict = {}
-    for x in range(11):
-        grade_proportions_dict[x] = 0
-    for grade in base_list:
-        grade_proportions_dict[int(grade)] = grade_proportions_dict.get(int(grade), 0) + 1
-
-    return grade_proportions_dict
-
-
-@create_database
 def return_grade_proportions_by_period(period: str) -> dict:
-    '''function that returns how many times a grade appears in a period, considering only the first digit'''
+    """function that returns how many times a grade appears in a period, considering only the first digit"""
 
     connection = sqlite3.connect("grades.sqlite3")
     cursor = connection.cursor()
@@ -274,7 +261,7 @@ def return_grade_proportions_by_period(period: str) -> dict:
 
 @create_database
 def return_average_by_date(period: str = None):
-    '''Function that returns averages by date, including rounded subject averages and their combined average.'''
+    """Function that returns averages by date, including rounded subject averages and their combined average."""
     connection = sqlite3.connect("grades.sqlite3")
     cursor = connection.cursor()
 
@@ -378,7 +365,7 @@ def return_average_by_date(period: str = None):
 
 @create_database
 def return_average_by_date_period(period: str = None):
-    '''Function that returns averages by date, including rounded subject averages and their combined average, considering periods.'''
+    """Function that returns averages by date, including rounded subject averages and their combined average, considering periods."""
     if period == "first_period":
         connection = sqlite3.connect("grades.sqlite3")
         cursor = connection.cursor()
@@ -492,7 +479,7 @@ def return_average_by_date_period(period: str = None):
 
 @create_database
 def return_average(subject: str) -> str:
-    '''function to return the average grade of a subject'''
+    """function to return the average grade of a subject"""
     command = f"SELECT SUM(grade*weight)/SUM(weight) AS average_grade FROM grades WHERE subject_name = '{subject}'"
     try:
         connection = sqlite3.connect("grades.sqlite3")
@@ -510,7 +497,7 @@ def return_average(subject: str) -> str:
 
 @create_database
 def return_average_by_period(subject: str, start_date, end_date) -> str:
-    '''function to return the average grade of a subject between two dates'''
+    """function to return the average grade of a subject between two dates"""
     command = f"""
     SELECT SUM(grade*weight)/SUM(weight) AS average_grade 
     FROM grades 
@@ -532,7 +519,7 @@ def return_average_by_period(subject: str, start_date, end_date) -> str:
 
 @create_database
 def return_average_by_period_bis(subject: str) -> str:
-    '''function to return the average grade of a subject based on the current period'''
+    """function to return the average grade of a subject based on the current period"""
     today = datetime.now().strftime('%Y%m%d')
 
     connection = sqlite3.connect("grades.sqlite3")
@@ -569,7 +556,7 @@ def return_average_by_period_bis(subject: str) -> str:
 
 @create_database
 def return_averages() -> list:
-    '''function to return all the averages grouped by subject'''
+    """function to return all the averages grouped by subject"""
     command = "SELECT subject_name, SUM(grade*weight)/SUM(weight) AS average_grade FROM grades GROUP BY subject_name;"
     averages_list = []
     try:
@@ -610,7 +597,7 @@ def return_averages() -> list:
 
 @create_database
 def return_averages_by_period() -> list:
-    '''function to return all the averages grouped by subject considering periods'''
+    """function to return all the averages grouped by subject considering periods"""
     today = datetime.now().strftime('%Y%m%d')
 
     connection = sqlite3.connect("grades.sqlite3")
@@ -669,34 +656,8 @@ def return_averages_by_period() -> list:
 
 
 @create_database
-def return_general_average():
-    '''function to return the general average'''
-    command = """
-    SELECT SUM(average_grade) / COUNT(subject_name) AS overall_average
-    FROM (
-        SELECT subject_name, 
-        SUM(grade * weight) / SUM(weight) AS average_grade
-        FROM grades
-        GROUP BY subject_name
-    ) AS subject_averages;
-    """
-    try:
-        connection = sqlite3.connect("grades.sqlite3")
-        cursor = connection.cursor()
-        cursor.execute(command)
-        average = cursor.fetchone()
-        general_average = average[0]
-        return f'{general_average:.2f}'
-    except Exception as e:
-        print(e)
-        return 'N/A'
-    finally:
-        connection.close()
-
-
-@create_database
 def return_general_average_by_period():
-    '''function to return the general average considering the current period'''
+    """function to return the general average considering the current period"""
 
     today = datetime.now().strftime('%Y%m%d')
 
@@ -739,7 +700,7 @@ def return_general_average_by_period():
 
 @create_database
 def delete_grade(id_: str):
-    '''function that deletes a grade gived its id'''
+    """function that deletes a grade given its id"""
     command = f"DELETE FROM grades WHERE id = {int(id_[13:])};"
     try:
         connection = sqlite3.connect("grades.sqlite3")
@@ -756,7 +717,7 @@ def delete_grade(id_: str):
 
 @create_database
 def edit_grade(data: dict):
-    '''function that edits a grade given its id'''
+    """function that edits a grade given its id"""
     command = f"UPDATE grades SET subject_name = '{data['subject']}', grade = '{data['grade']}', date = '{data['date']}', weight = '{data['grade_weight']}', type = '{data['type']}' WHERE id = '{int(data['grade_id'])}'"
     try:
         connection = sqlite3.connect("grades.sqlite3")
@@ -773,7 +734,7 @@ def edit_grade(data: dict):
 
 @create_database
 def set_primary_colour(colour: str):
-    '''function that sets a primary color'''
+    """function that sets a primary color"""
     check_list = []
     try:
         connection = sqlite3.connect("grades.sqlite3")
@@ -800,7 +761,7 @@ def set_primary_colour(colour: str):
 
 @create_database
 def delete_subject(subject: str):
-    '''function that deletes a subject'''
+    """function that deletes a subject"""
     command = f"DELETE FROM subject_list WHERE subject = '{subject}'"
     command_2 = f"DELETE FROM grades WHERE subject_name = '{subject}'"
     try:
@@ -819,7 +780,7 @@ def delete_subject(subject: str):
 
 @create_database
 def rename_subject(old_subject_name: str, new_subject_name: str):
-    '''function that renames a subject'''
+    """function that renames a subject"""
     command = f"UPDATE subject_list SET subject = '{new_subject_name}' WHERE subject = '{old_subject_name}'"
     command_2 = f"UPDATE grades SET subject_name = '{new_subject_name}' WHERE subject_name = '{old_subject_name}'"
     try:
@@ -841,7 +802,7 @@ def rename_subject(old_subject_name: str, new_subject_name: str):
 
 @create_database
 def set_objective(subject: str, objective: float):
-    '''function that sets an objective for a subject'''
+    """function that sets an objective for a subject"""
     command = f"UPDATE subject_list SET objective = '{objective}' WHERE subject = '{subject}'"
     try:
         connection = sqlite3.connect("grades.sqlite3")
@@ -858,7 +819,7 @@ def set_objective(subject: str, objective: float):
 
 @create_database
 def set_period(period_name: str, start_date, end_date):
-    '''function that sets a period'''
+    """function that sets a period"""
     if start_date > end_date:
         return 'invalid dates'
     
@@ -887,7 +848,7 @@ def set_period(period_name: str, start_date, end_date):
 
 @create_database
 def get_periods():
-    '''function that returns all periods'''
+    """function that returns all periods"""
     command = "SELECT * FROM periods"
     result = []
     try:
@@ -906,34 +867,8 @@ def get_periods():
 
 
 @create_database
-def objective_achievement_subject(subject: str):
-    '''function that returns the achievement of the objective of a subject'''
-    average = float(return_average(subject))
-    command = f"SELECT objective FROM subject_list WHERE subject = '{subject}'"
-    try:
-        connection = sqlite3.connect("grades.sqlite3")
-        cursor = connection.cursor()
-        cursor.execute(command)
-        objective = cursor.fetchone()
-        if average == 'N/A' or objective[0] is None:
-            return "not enough data"
-        if average >= objective[0]:
-            return "completely reached"
-        if round_custom(average) >= objective[0]:
-            return "reached"
-        if  average >= objective[0] - 1:
-            return "almost reached"
-        return "not reached"
-    except Exception as e:
-        print(e)
-        return False
-    finally:
-        connection.close()
-
-
-@create_database
 def objective_achievement_subject_by_period(subject: str):
-    '''function that returns the achievement of the objective of a subject considering periods and today's date'''
+    """function that returns the achievement of the objective of a subject considering periods and today's date"""
     today = datetime.now().strftime('%Y%m%d')
 
     connection = sqlite3.connect("grades.sqlite3")
@@ -974,52 +909,8 @@ def objective_achievement_subject_by_period(subject: str):
 
 
 @create_database
-def objective_achievement():
-    '''function that returns the achievement of the objectives'''
-    subjects_averages = return_averages()
-    subject_number = len([x[0] for x in subjects_averages])
-    result = {}
-    count_result = {
-        'completely reached': 0,
-        'reached': 0,
-        'almost reached': 0,
-        'not reached': 0,
-        'not enough data': 0
-    }
-    for subject, average in subjects_averages:
-        command = f"SELECT objective FROM subject_list WHERE subject = '{subject}'"
-        try:
-            connection = sqlite3.connect("grades.sqlite3")
-            cursor = connection.cursor()
-            cursor.execute(command)
-            objective = cursor.fetchone()
-            if average == 'N/A' or objective[0] is None:
-                result[subject] = "not enough data"
-                continue
-            if average >= objective[0]:
-                result[subject] = "completely reached"
-                continue
-            if round_custom(average) >= objective[0]:
-                result[subject] = "reached"
-                continue
-            if  average >= objective[0] - 1:
-                result[subject] = "almost reached"
-                continue
-            result[subject] = "not reached"
-            continue
-        except Exception as e:
-            print(e)
-            return False
-        finally:
-            connection.close()
-    for value in result.values():
-        count_result[value] = count_result.get(value) + 1
-    return result, count_result, subject_number
-
-
-@create_database
 def objective_achievement_by_period():
-    '''function that returns the achievement of the objectives considering periods and today's date'''
+    """function that returns the achievement of the objectives considering periods and today's date"""
     today = datetime.now().strftime('%Y%m%d')
 
     connection = sqlite3.connect("grades.sqlite3")
